@@ -29,10 +29,25 @@ jobs:
           cd mobile
           flutter create --project-name devtoolbox_mobile --org com.devtoolbox --platforms android,ios .
 
+      - name: Fix Kotlin version
+        run: |
+          cd mobile/android
+          # Update Kotlin version in settings.gradle
+          if [ -f settings.gradle ]; then
+            sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "1.9.22"/' settings.gradle
+          fi
+          # Update Kotlin version in build.gradle if exists
+          if [ -f build.gradle ]; then
+            sed -i "s/ext.kotlin_version = '[^']*'/ext.kotlin_version = '1.9.22'/" build.gradle
+          fi
+          # Also check settings.gradle.kts
+          if [ -f settings.gradle.kts ]; then
+            sed -i 's/id("org.jetbrains.kotlin.android") version "[^"]*"/id("org.jetbrains.kotlin.android") version "1.9.22"/' settings.gradle.kts
+          fi
+
       - name: Restore source code
         run: |
           cd mobile
-          # flutter create overwrites lib/main.dart, restore our code
           git checkout -- lib/ pubspec.yaml analysis_options.yaml
 
       - name: Get dependencies
