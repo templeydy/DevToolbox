@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.spec
+
+# PyInstaller
+*.exe
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+sign.ps1
+trust_cert.ps1
+
+# Flutter
+mobile/.dart_tool/
+mobile/.packages
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/android/
+mobile/ios/
+mobile/web/
+mobile/windows/
+mobile/linux/
+mobile/macos/
+mobile/.metadata
+
+# Kiro
+.kiro/
+
+# Temp
+*.tmp
