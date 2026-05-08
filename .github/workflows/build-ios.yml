@@ -3,16 +3,11 @@ name: Build iOS
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'mobile/**'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: macos-latest
-    defaults:
-      run:
-        working-directory: mobile
 
     steps:
       - uses: actions/checkout@v4
@@ -23,16 +18,25 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
-      - name: Create Flutter project structure
+      - name: Create Flutter project
         run: |
+          cd mobile
           flutter create --project-name devtoolbox_mobile --org com.devtoolbox --platforms android,ios .
-          git checkout -- lib/ pubspec.yaml
+
+      - name: Restore source code
+        run: |
+          cd mobile
+          git checkout -- lib/ pubspec.yaml analysis_options.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd mobile
+          flutter pub get
 
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: |
+          cd mobile
+          flutter build ios --release --no-codesign
 
       - name: Upload iOS build
         uses: actions/upload-artifact@v4

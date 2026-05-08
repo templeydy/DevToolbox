@@ -3,16 +3,11 @@ name: Build Android APK
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'mobile/**'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: mobile
 
     steps:
       - uses: actions/checkout@v4
@@ -29,26 +24,29 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
-      - name: Create Flutter project structure
+      - name: Create Flutter project
         run: |
+          cd mobile
           flutter create --project-name devtoolbox_mobile --org com.devtoolbox --platforms android,ios .
-          # Restore our source files (flutter create may overwrite some)
-          git checkout -- lib/ pubspec.yaml
+
+      - name: Restore source code
+        run: |
+          cd mobile
+          # flutter create overwrites lib/main.dart, restore our code
+          git checkout -- lib/ pubspec.yaml analysis_options.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd mobile
+          flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release
-
-      - name: Build split APKs
-        run: flutter build apk --split-per-abi --release
+        run: |
+          cd mobile
+          flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: |
-            mobile/build/app/outputs/flutter-apk/app-release.apk
-            mobile/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            mobile/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
